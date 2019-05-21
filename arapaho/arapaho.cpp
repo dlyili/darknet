@@ -227,11 +227,16 @@ bool ArapahoV2::Detect(
 
     //Convert to rgb
     cv::Mat inputRgb;
-    cvtColor(inputMat, inputRgb, CV_BGR2RGB);
+#if (CV_MAJOR_VERSION < 4)
+	cvtColor(inputMat, inputRgb, CV_BGR2RGB);
+	//Convert to IplImage
+	IplImage ipl_img = inputRgb;
+	image im = ipl_to_image(&ipl_img);
+#else
+    cvtColor(inputMat, inputRgb, cv::COLOR_BGR2RGB);
+	image im = mat_to_image(&inputRgb);
+#endif
 
-    //Convert to IplImage
-    IplImage ipl_img = inputRgb;
-    image im = ipl_to_image(&ipl_img);
 
     image sized = letterbox_image( im, net->w, net->h );
 

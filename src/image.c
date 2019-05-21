@@ -539,6 +539,7 @@ void rgbgr_image(image im)
 }
 
 #ifdef OPENCV
+#if (CV_MAJOR_VERSION < 4)
 void show_image_cv(image p, const char *name, IplImage *disp)
 {
     int x,y,k;
@@ -575,10 +576,12 @@ void show_image_cv(image p, const char *name, IplImage *disp)
     cvShowImage(buff, disp);
 }
 #endif
+#endif
 
 int show_image(image p, const char *name, int ms)
 {
 #ifdef OPENCV
+#if (CV_MAJOR_VERSION < 4)
     IplImage *disp = cvCreateImage(cvSize(p.w,p.h), IPL_DEPTH_8U, p.c);
     image copy = copy_image(p);
     constrain_image(copy);
@@ -588,6 +591,7 @@ int show_image(image p, const char *name, int ms)
     int c = cvWaitKey(ms);
     if (c != -1) c = c%256;
     return c;
+#endif // cv3 only
 #else
     fprintf(stderr, "Not compiled with OpenCV, saving to %s.png instead\n", name);
     save_image(p, name);
@@ -596,7 +600,7 @@ int show_image(image p, const char *name, int ms)
 }
 
 #ifdef OPENCV
-
+#if (CV_MAJOR_VERSION < 4)
 void ipl_into_image(IplImage* src, image im)
 {
     unsigned char *data = (unsigned char *)src->imageData;
@@ -701,6 +705,39 @@ void save_image_jpg(image p, const char *name)
     cvReleaseImage(&disp);
     free_image(copy);
 }
+#endif //cv3
+#endif
+
+#ifdef OPENCV
+void mat_into_image(cv::Mat src, image im)
+{
+	unsigned char *data = (unsigned char *)src.data;
+	int h = src.size().height;
+	int w = src.size().width;
+	int c = src.channels();
+	int step = src.step;
+
+	int i, j, k;
+
+
+	for (i = 0; i < h; ++i) {
+		for (k = 0; k < c; ++k) {
+			for (j = 0; j < w; ++j) {
+				im.data[k*w*h + i * w + j] = data[i*step + j * c + k] / 255.;
+			}
+		}
+	}
+}
+
+image mat_to_image(cv::Mat* src)
+{
+	int h = src->size().height;
+	int w = src->size().width;
+	int c = src->channels();
+	image out = make_image(w, h, c);
+	mat_into_image(*src, out);
+	return out;
+}
 #endif
 
 void save_image_png(image im, const char *name)
@@ -723,7 +760,9 @@ void save_image_png(image im, const char *name)
 void save_image(image im, const char *name)
 {
 #ifdef OPENCV
+#if (CV_MAJOR_VERSION < 4)
     save_image_jpg(im, name);
+#endif
 #else
     save_image_png(im, name);
 #endif
@@ -945,7 +984,9 @@ void composite_3d(char *f1, char *f2, char *out, int delta)
         c.data[i] = a.data[i];
     }
 #ifdef OPENCV
+#if (CV_MAJOR_VERSION < 4)
     save_image_jpg(c, out);
+#endif
 #else
     save_image(c, out);
 #endif
@@ -1423,6 +1464,7 @@ void test_resize(char *filename)
     show_image(c3, "C3", 1);
     show_image(c4, "C4", 1);
 #ifdef OPENCV
+#if (CV_MAJOR_VERSION < 4)
     while(1){
         image aug = random_augment_image(im, 0, .75, 320, 448, 320, 320);
         show_image(aug, "aug", 1);
@@ -1445,6 +1487,7 @@ void test_resize(char *filename)
         free_image(c);
         cvWaitKey(0);
     }
+#endif
 #endif
 }
 
@@ -1476,7 +1519,11 @@ image load_image_stb(char *filename, int channels)
 image load_image(char *filename, int w, int h, int c)
 {
 #ifdef OPENCV
+#if (CV_MAJOR_VERSION < 4)
     image out = load_image_cv(filename, c);
+#else
+	image out;
+#endif
 #else
     image out = load_image_stb(filename, c);
 #endif

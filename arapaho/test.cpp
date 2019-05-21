@@ -110,7 +110,7 @@ int main()
     Mat image;
 
     // Setup show window
-    namedWindow ( "Arapaho" , CV_WINDOW_AUTOSIZE );
+    namedWindow ( "Arapaho" , cv::WINDOW_AUTOSIZE );
     
 	image = cv::imread(INPUT_IMAGE_FILE);
 
@@ -209,8 +209,8 @@ int main()
                             objId, boxes[objId].x, boxes[objId].y, boxes[objId].w, boxes[objId].h);
                     // Show image and overlay using OpenCV
                     rectangle(image,
-                        cvPoint(leftTopX, leftTopY),
-                        cvPoint(rightBotX, rightBotY),
+                        cv::Point(leftTopX, leftTopY),
+                        cv::Point(rightBotX, rightBotY),
                         CV_RGB(255, 0, 0), 1, 8, 0);
                     // Show labels
                     if (labels[objId].c_str())
@@ -218,8 +218,8 @@ int main()
                         char probAsString[200];
                         snprintf(probAsString, 200, "%s: %f", labels[objId].c_str(), probs[objId]);
                         DPRINTF("Label:%s, Probabilty: %s\n\n", labels[objId].c_str(), probAsString);
-                        putText(image, probAsString, cvPoint(leftTopX, leftTopY),
-                            FONT_HERSHEY_COMPLEX_SMALL, 0.8, cvScalar(200, 200, 250), 1, CV_AA);
+                        putText(image, probAsString, cv::Point(leftTopX, leftTopY),
+                            FONT_HERSHEY_COMPLEX_SMALL, 0.8, cv::Scalar(200, 200, 250), 1);
                     }
                 }
                 
