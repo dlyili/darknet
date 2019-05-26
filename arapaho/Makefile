@@ -2,9 +2,10 @@
 # Undefine GPU, CUDNN if darknet was built without these defined. These 2 flags have to match darknet flags.
 # https://github.com/prabindh/darknet
 
-GPU=1
-CUDNN=1
+GPU=0
+CUDNN=0
 DEBUG=0
+OPENCV=1
 
 CC_CPP=g++
 CFLAGS_CPP=-Wno-write-strings -std=c++11
@@ -12,9 +13,12 @@ CFLAGS_CPP=-Wno-write-strings -std=c++11
 OPTS=-Ofast
 LDFLAGS= -L./ -ldarknet-cpp-shared
 LDFLAGS+= -Wl,-rpath,'$$ORIGIN'
-LDFLAGS+= `pkg-config --libs opencv`
 COMMON= -I../src/ -I../include
-COMMON+= `pkg-config --cflags opencv`
+ifeq ($(OPENCV),1)
+COMMON+="-DOPENCV"
+LDFLAGS+= `pkg-config --libs opencv4`
+COMMON+= `pkg-config --cflags opencv4`
+endif
 CFLAGS=-Wall -Wfatal-errors
 
 ifeq ($(DEBUG), 1)

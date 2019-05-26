@@ -674,11 +674,19 @@ void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filenam
         else{
             save_image(im, "predictions");
 #ifdef OPENCV
-            cvNamedWindow("predictions", CV_WINDOW_NORMAL); 
+#if (CV_MAJOR_VERSION < 4)
+            cvNamedWindow("predictions", CV_WINDOW_NORMAL);
             if(fullscreen){
                 cvSetWindowProperty("predictions", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
             }
             show_image(im, "predictions", 0);
+#else
+	    cv::namedWindow("predictions", cv::WINDOW_NORMAL);
+            if(fullscreen){
+		    cv::setWindowProperty("predictions", cv::WND_PROP_FULLSCREEN, cv::WINDOW_FULLSCREEN);
+	                }
+            show_image(im, "predictions", 0);
+#endif
 #endif
         }
 
@@ -911,11 +919,7 @@ void run_detector(int argc, char **argv)
     else if(0==strcmp(argv[2], "valid2")) validate_detector_flip(datacfg, cfg, weights, outfile);
     else if(0==strcmp(argv[2], "recall")) validate_detector_recall(cfg, weights);
     else if(0==strcmp(argv[2], "demo")) {
-        list *options = read_data_cfg(datacfg);
-        int classes = option_find_int(options, "classes", 20);
-        char *name_list = option_find_str(options, "names", "data/names.list");
-        char **names = get_labels(name_list);
-        demo(cfg, weights, thresh, cam_index, filename, names, classes, frame_skip, prefix, avg, hier_thresh, width, height, fps, fullscreen);
+        printf("Invalid option -demo\n");
     }
     //else if(0==strcmp(argv[2], "extract")) extract_detector(datacfg, cfg, weights, cam_index, filename, class, thresh, frame_skip);
     //else if(0==strcmp(argv[2], "censor")) censor_detector(datacfg, cfg, weights, cam_index, filename, class, thresh, frame_skip);
