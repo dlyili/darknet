@@ -1,6 +1,9 @@
 #include "darknet.h"
-#include <sys/time.h>
+#include <sys/utime.h>
 #include <assert.h>
+
+int gettimeofday(struct timeval *tp, void *tzp);
+void timersub(struct timeval *a, struct timeval *b, struct timeval *result);
 
 void normalize_image2(image p);
 void train_isegmenter(char *datacfg, char *cfgfile, char *weightfile, int *gpus, int ngpus, int clear, int display)
@@ -255,7 +258,7 @@ void run_isegmenter(int argc, char **argv)
             gpu_list = strchr(gpu_list, ',')+1;
         }
     } else {
-        gpu = gpu_index;
+        gpu = *get_gpu_index();
         gpus = &gpu;
         ngpus = 1;
     }

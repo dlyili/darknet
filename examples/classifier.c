@@ -3,8 +3,40 @@
 #endif
 #include "darknet.h"
 
-#include <sys/time.h>
+#include <sys/utime.h>
+#include <time.h>
 #include <assert.h>
+#include <windows.h>
+
+int gettimeofday(struct timeval *tp, void *tzp)
+{
+	time_t clock;
+	struct tm tm;
+	SYSTEMTIME wtm;
+	GetLocalTime(&wtm);
+	tm.tm_year = wtm.wYear - 1900;
+	tm.tm_mon = wtm.wMonth - 1;
+	tm.tm_mday = wtm.wDay;
+	tm.tm_hour = wtm.wHour;
+	tm.tm_min = wtm.wMinute;
+	tm.tm_sec = wtm.wSecond;
+	tm.tm_isdst = -1;
+	clock = mktime(&tm);
+	tp->tv_sec = clock;
+	tp->tv_usec = wtm.wMilliseconds * 1000;
+	return (0);
+}
+
+void timersub(struct timeval *a, struct timeval *b, struct timeval *result) 
+{
+	(result)->tv_sec = (a)->tv_sec - (b)->tv_sec;
+	(result)->tv_usec = (a)->tv_usec - (b)->tv_usec;
+	if ((result)->tv_usec < 0) 
+	{
+		--(result)->tv_sec;
+		(result)->tv_usec += 1000000;
+	}
+}
 
 float *get_regression_values(char **labels, int n)
 {
@@ -1121,7 +1153,7 @@ void run_classifier(int argc, char **argv)
     char *gpu_list = find_char_arg(argc, argv, "-gpus", 0);
 
     int ngpus;
-    int *gpus = read_intlist(gpu_list, &ngpus, gpu_index);
+    int *gpus = read_intlist(gpu_list, &ngpus, *get_gpu_index());
 
 
     int cam_index = find_int_arg(argc, argv, "-c", 0);

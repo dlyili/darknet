@@ -673,6 +673,7 @@ void save_image_png(image im, const char *name);
 void get_next_batch(data d, int n, int offset, float *X, float *y);
 void grayscale_image_3c(image im);
 void normalize_image(image p);
+void normalize_image2(image p);
 void matrix_to_csv(matrix m);
 float train_network_sgd(network *net, data d, int n);
 void rgbgr_image(image im);
@@ -821,6 +822,8 @@ int *read_intlist(char *s, int *n, int d);
 size_t rand_size_t();
 float rand_normal();
 float rand_uniform(float min, float max);
+//add by jiangjj
+int* get_gpu_index();
 
 #ifdef __cplusplus 
 }

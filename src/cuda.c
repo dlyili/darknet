@@ -1,4 +1,10 @@
+#include "darknet.h"
 int gpu_index = 0;
+
+int* get_gpu_index()
+{
+	return &gpu_index;
+}
 
 #ifdef GPU
 

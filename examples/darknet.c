@@ -27,7 +27,7 @@ void average(int argc, char *argv[])
 {
     char *cfgfile = argv[2];
     char *outfile = argv[3];
-    gpu_index = -1;
+	*get_gpu_index() = -1;
     network *net = parse_network_cfg(cfgfile);
     network *sum = parse_network_cfg(cfgfile);
 
@@ -136,7 +136,7 @@ void speed(char *cfgfile, int tics)
 
 void operations(char *cfgfile)
 {
-    gpu_index = -1;
+	*get_gpu_index() = -1;
     network *net = parse_network_cfg(cfgfile);
     long ops = numops(net);
     printf("Floating Point Operations: %ld\n", ops);
@@ -145,7 +145,7 @@ void operations(char *cfgfile)
 
 void oneoff(char *cfgfile, char *weightfile, char *outfile)
 {
-    gpu_index = -1;
+	*get_gpu_index() = -1;
     network *net = parse_network_cfg(cfgfile);
     int oldn = net->layers[net->n - 2].n;
     int c = net->layers[net->n - 2].c;
@@ -172,7 +172,7 @@ void oneoff(char *cfgfile, char *weightfile, char *outfile)
 
 void oneoff2(char *cfgfile, char *weightfile, char *outfile, int l)
 {
-    gpu_index = -1;
+	*get_gpu_index() = -1;
     network *net = parse_network_cfg(cfgfile);
     if(weightfile){
         load_weights_upto(net, weightfile, 0, net->n);
@@ -184,14 +184,14 @@ void oneoff2(char *cfgfile, char *weightfile, char *outfile, int l)
 
 void partial(char *cfgfile, char *weightfile, char *outfile, int max)
 {
-    gpu_index = -1;
+	*get_gpu_index() = -1;
     network *net = load_network(cfgfile, weightfile, 1);
     save_weights_upto(net, outfile, max);
 }
 
 void print_weights(char *cfgfile, char *weightfile, int n)
 {
-    gpu_index = -1;
+	*get_gpu_index() = -1;
     network *net = load_network(cfgfile, weightfile, 1);
     layer l = net->layers[n];
     int i, j;
@@ -210,7 +210,7 @@ void print_weights(char *cfgfile, char *weightfile, int n)
 
 void rescale_net(char *cfgfile, char *weightfile, char *outfile)
 {
-    gpu_index = -1;
+	*get_gpu_index() = -1;
     network *net = load_network(cfgfile, weightfile, 0);
     int i;
     for(i = 0; i < net->n; ++i){
@@ -225,7 +225,7 @@ void rescale_net(char *cfgfile, char *weightfile, char *outfile)
 
 void rgbgr_net(char *cfgfile, char *weightfile, char *outfile)
 {
-    gpu_index = -1;
+	*get_gpu_index() = -1;
     network *net = load_network(cfgfile, weightfile, 0);
     int i;
     for(i = 0; i < net->n; ++i){
@@ -240,7 +240,7 @@ void rgbgr_net(char *cfgfile, char *weightfile, char *outfile)
 
 void reset_normalize_net(char *cfgfile, char *weightfile, char *outfile)
 {
-    gpu_index = -1;
+	*get_gpu_index() = -1;
     network *net = load_network(cfgfile, weightfile, 0);
     int i;
     for (i = 0; i < net->n; ++i) {
@@ -278,7 +278,7 @@ layer normalize_layer(layer l, int n)
 
 void normalize_net(char *cfgfile, char *weightfile, char *outfile)
 {
-    gpu_index = -1;
+	*get_gpu_index() = -1;
     network *net = load_network(cfgfile, weightfile, 0);
     int i;
     for(i = 0; i < net->n; ++i){
@@ -304,7 +304,7 @@ void normalize_net(char *cfgfile, char *weightfile, char *outfile)
 
 void statistics_net(char *cfgfile, char *weightfile)
 {
-    gpu_index = -1;
+	*get_gpu_index() = -1;
     network *net = load_network(cfgfile, weightfile, 0);
     int i;
     for (i = 0; i < net->n; ++i) {
@@ -334,7 +334,7 @@ void statistics_net(char *cfgfile, char *weightfile)
 
 void denormalize_net(char *cfgfile, char *weightfile, char *outfile)
 {
-    gpu_index = -1;
+	*get_gpu_index() = -1;
     network *net = load_network(cfgfile, weightfile, 0);
     int i;
     for (i = 0; i < net->n; ++i) {
@@ -410,16 +410,16 @@ int main(int argc, char **argv)
         fprintf(stderr, "usage: %s <function>\n", argv[0]);
         return 0;
     }
-    gpu_index = find_int_arg(argc, argv, "-i", 0);
+	*get_gpu_index() = find_int_arg(argc, argv, "-i", 0);
     if(find_arg(argc, argv, "-nogpu")) {
-        gpu_index = -1;
+		*get_gpu_index() = -1;
     }
 
 #ifndef GPU
-    gpu_index = -1;
+	*get_gpu_index() = -1;
 #else
     if(gpu_index >= 0){
-        cuda_set_device(gpu_index);
+        cuda_set_device(*get_gpu_index());
     }
 #endif
 
@@ -442,7 +442,7 @@ int main(int argc, char **argv)
     } else if (0 == strcmp(argv[1], "cifar")){
         run_cifar(argc, argv);
     } else if (0 == strcmp(argv[1], "go")){
-        run_go(argc, argv);
+        //run_go(argc, argv);
     } else if (0 == strcmp(argv[1], "rnn")){
         run_char_rnn(argc, argv);
     } else if (0 == strcmp(argv[1], "coco")){

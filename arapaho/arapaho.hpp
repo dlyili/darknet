@@ -18,6 +18,7 @@
 #include <locale.h>
 #include <string>
 #include <opencv2/opencv.hpp>
+#include <opencv2/imgproc/types_c.h>
 #include "network.h"
 #include "detection_layer.h"
 #include "cost_layer.h"
