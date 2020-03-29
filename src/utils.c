@@ -223,7 +223,7 @@ char *basecfg(char *cfgfile)
 {
     char *c = cfgfile;
     char *next;
-    while((next = strchr(c, '/')))
+    while((next = strchr(c, '/')) || (next = strchr(c, '\\')))
     {
         c = next+1;
     }

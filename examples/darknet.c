@@ -418,7 +418,7 @@ int main(int argc, char **argv)
 #ifndef GPU
 	*get_gpu_index() = -1;
 #else
-    if(gpu_index >= 0){
+    if(get_gpu_index() >= 0){
         cuda_set_device(*get_gpu_index());
     }
 #endif
